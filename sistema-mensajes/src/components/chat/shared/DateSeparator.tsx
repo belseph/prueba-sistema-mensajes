@@ -9,9 +9,12 @@ export const DateSeparator: React.FC<DateSeparatorProps> = ({ date }) => {
     const now = new Date();
     const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
     const yesterday = new Date(today.getTime() - 24 * 60 * 60 * 1000);
-    const messageDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
     
-    // ✅ LÓGICA COMO WHATSAPP
+    // ✅ CONVERTIR FECHA A ZONA HORARIA LOCAL
+    const localDate = new Date(date.toLocaleString());
+    const messageDate = new Date(localDate.getFullYear(), localDate.getMonth(), localDate.getDate());
+    
+    // ✅ LÓGICA COMO WHATSAPP PERO CON HORA LOCAL
     if (messageDate.getTime() === today.getTime()) {
       return 'Hoy';
     } else if (messageDate.getTime() === yesterday.getTime()) {
@@ -21,20 +24,25 @@ export const DateSeparator: React.FC<DateSeparatorProps> = ({ date }) => {
       const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
       
       if (diffDays <= 7) {
-        // ✅ Días de la semana para la última semana
-        return date.toLocaleDateString('es-ES', { weekday: 'long' });
+        // ✅ Días de la semana para la última semana EN ZONA LOCAL
+        return localDate.toLocaleDateString('es-ES', { 
+          weekday: 'long',
+          timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone
+        });
       } else if (diffDays <= 365) {
-        // ✅ Fecha sin año para el año actual
-        return date.toLocaleDateString('es-ES', { 
+        // ✅ Fecha sin año para el año actual EN ZONA LOCAL
+        return localDate.toLocaleDateString('es-ES', { 
           day: 'numeric', 
-          month: 'long' 
+          month: 'long',
+          timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone
         });
       } else {
-        // ✅ Fecha completa para años anteriores
-        return date.toLocaleDateString('es-ES', { 
+        // ✅ Fecha completa para años anteriores EN ZONA LOCAL
+        return localDate.toLocaleDateString('es-ES', { 
           day: 'numeric', 
           month: 'long', 
-          year: 'numeric' 
+          year: 'numeric',
+          timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone
         });
       }
     }

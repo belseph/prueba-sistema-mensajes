@@ -40,6 +40,13 @@ export const transformUsuarioCompletoToChatUser = (
   };
 };
 
+// ✅ FUNCIÓN HELPER: Convertir timestamp del backend a Date local
+const parseBackendTimestamp = (timestamp: string): Date => {
+  // Si el timestamp no tiene 'Z' al final, asumimos que es UTC y lo agregamos
+  const utcTimestamp = timestamp.includes('Z') ? timestamp : timestamp + 'Z';
+  return new Date(utcTimestamp);
+};
+
 // ✅ Transformar MensajeDTO del backend a ChatMessage del frontend
 export const transformMensajeDTOToChatMessage = (mensajeDTO: MensajeDTO): ChatMessage => {
   if (!mensajeDTO || typeof mensajeDTO.id === 'undefined') {
@@ -58,7 +65,7 @@ export const transformMensajeDTOToChatMessage = (mensajeDTO: MensajeDTO): ChatMe
     id: mensajeDTO.id,
     senderId: mensajeDTO.emisorId,
     content: mensajeDTO.contenido || '',
-    timestamp: new Date(mensajeDTO.timestampEnvio),
+    timestamp: parseBackendTimestamp(mensajeDTO.timestampEnvio.toString()), // ✅ CONVERSIÓN MEJORADA
     type: 'text',
     status: mensajeDTO.leido ? 'read' : 'delivered',
     sender: transformUsuarioToChatUser(emisor)
@@ -110,7 +117,7 @@ export const transformMensajeToChatMessage = (mensaje: any): ChatMessage => {
     id: mensaje.id,
     senderId: emisorData.id,
     content: mensaje.contenido || '',
-    timestamp: new Date(mensaje.timestampEnvio),
+    timestamp: parseBackendTimestamp(mensaje.timestampEnvio), // ✅ CONVERSIÓN MEJORADA
     type: 'text' as const,
     status: mensaje.leido ? 'read' as const : 'delivered' as const,
     sender: transformUsuarioToChatUser(emisorData)
@@ -119,7 +126,8 @@ export const transformMensajeToChatMessage = (mensaje: any): ChatMessage => {
   console.log('✅ Mensaje transformado exitosamente:', {
     id: chatMessage.id,
     senderId: chatMessage.senderId,
-    senderName: chatMessage.sender.name
+    senderName: chatMessage.sender.name,
+    timestamp: chatMessage.timestamp.toISOString()
   });
 
   return chatMessage;
@@ -159,7 +167,7 @@ export const transformConversacionResumenToChatConversation = (
     id: 0, // ✅ ID temporal para último mensaje
     senderId: lastMessageSenderId,
     content: resumen.ultimoMensaje,
-    timestamp: new Date(resumen.timestampUltimoMensaje),
+    timestamp: parseBackendTimestamp(resumen.timestampUltimoMensaje.toString()), // ✅ CONVERSIÓN MEJORADA
     type: 'text',
     status: 'read',
     sender: lastMessageSenderId === currentUserId ? currentUser : otherUser
@@ -170,7 +178,7 @@ export const transformConversacionResumenToChatConversation = (
     participants: [currentUser, otherUser], // ✅ AMBOS USUARIOS
     lastMessage,
     unreadCount: resumen.mensajesNoLeidos,
-    updatedAt: new Date(resumen.timestampUltimoMensaje),
+    updatedAt: parseBackendTimestamp(resumen.timestampUltimoMensaje.toString()), // ✅ CONVERSIÓN MEJORADA
     title: resumen.nombreOtroUsuario, // ✅ NOMBRE REAL DEL OTRO USUARIO
     type: 'direct'
   };
