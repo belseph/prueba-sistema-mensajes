@@ -60,6 +60,7 @@ export const ConversationItem: React.FC<ConversationItemProps> = ({
         </div>
         
         <div className="flex-1 min-w-0">
+          {/* ✅ HEADER: Nombre, ícono y hora */}
           <div className="flex items-center justify-between mb-1">
             <div className="flex items-center gap-2 min-w-0">
               <h3 className="font-semibold text-gray-900 truncate text-sm">
@@ -67,32 +68,39 @@ export const ConversationItem: React.FC<ConversationItemProps> = ({
               </h3>
               {getConversationIcon(conversation.type)}
             </div>
-            <div className="flex items-center gap-2 flex-shrink-0">
+            {/* ✅ SOLO LA HORA - Sin badge */}
+            <div className="flex-shrink-0">
               {conversation.lastMessage && (
                 <span className="text-xs text-gray-500 font-medium">
                   {formatMessageTime(conversation.lastMessage.timestamp.toISOString())}
                 </span>
               )}
-              {conversation.unreadCount > 0 && (
-                <div className="min-w-[20px] h-5 bg-gradient-to-r from-blue-500 to-purple-600 text-white text-xs rounded-full flex items-center justify-center px-1.5 font-bold shadow-sm">
-                  {conversation.unreadCount > 99 ? '99+' : conversation.unreadCount}
-                </div>
-              )}
             </div>
           </div>
           
+          {/* ✅ MENSAJE */}
           <p className="text-sm text-gray-600 truncate mb-2 leading-relaxed">
             {conversation.lastMessage?.content || 'No hay mensajes aún'}
           </p>
           
-          <div className="flex items-center gap-2">
-            <span className={`text-xs px-2 py-1 rounded-full font-medium border ${getRoleColor(otherParticipant.role || 'colaborador')}`}>
-              {otherParticipant.role === 'mentor' ? '🎓 Mentor' : '🤝 Colaborador'}
-            </span>
-            {otherParticipant.expertise && otherParticipant.expertise.length > 0 && (
-              <span className="text-xs text-gray-500 truncate">
-                • {otherParticipant.expertise[0]}
+          {/* ✅ FOOTER: Rol y badge de no leídos */}
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <span className={`text-xs px-2 py-1 rounded-full font-medium border ${getRoleColor(otherParticipant.role || 'colaborador')}`}>
+                {otherParticipant.role === 'mentor' ? '🎓 Mentor' : '🤝 Colaborador'}
               </span>
+              {otherParticipant.expertise && otherParticipant.expertise.length > 0 && (
+                <span className="text-xs text-gray-500 truncate">
+                  • {otherParticipant.expertise[0]}
+                </span>
+              )}
+            </div>
+            
+            {/* ✅ BADGE DE NO LEÍDOS - Ahora en la parte inferior derecha */}
+            {conversation.unreadCount > 0 && (
+              <div className="min-w-[20px] h-5 bg-gradient-to-r from-blue-500 to-purple-600 text-white text-xs rounded-full flex items-center justify-center px-1.5 font-bold shadow-sm">
+                {conversation.unreadCount > 99 ? '99+' : conversation.unreadCount}
+              </div>
             )}
           </div>
         </div>
